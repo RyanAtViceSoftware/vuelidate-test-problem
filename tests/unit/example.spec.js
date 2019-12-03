@@ -11,10 +11,11 @@ import {
   expectBySelector,
   expectValidForm
 } from './expect'
+import waitForExpect from 'wait-for-expect'
 
 
 describe("HelloWorld.vue", () => {
-  it("renders props.msg when passed", () => {
+  it("renders props.msg when passed", async () => {
     const localVue = createLocalVue()
 
     localVue.config.productionTip = false;
@@ -68,6 +69,10 @@ describe("HelloWorld.vue", () => {
       JSON.stringify(generalInformationForm.vm.$v)
     )
 
-    expect(generalInformationForm.vm.$v.$invalid).toEqual(false)
+    // Note that waitForExpect will move to the next tick of the Javascript event loop
+    // and then call the function it is passed. It will do this over and over again 
+    // until it timesout. This is a better alternative to vue's `nextTick()` IMHO as 
+    // you don't have to worry about waiting for multiple ticks.
+    await waitForExpect(() => expect(generalInformationForm.vm.$v.$invalid).toEqual(false))
   });
 });
